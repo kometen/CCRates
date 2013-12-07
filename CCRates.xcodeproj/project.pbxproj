@@ -21,6 +21,7 @@
 		48B5288E184154D300F43DC4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48B52870184154D300F43DC4 /* UIKit.framework */; };
 		48B52896184154D300F43DC4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 48B52894184154D300F43DC4 /* InfoPlist.strings */; };
 		48B52898184154D300F43DC4 /* CCRatesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B52897184154D300F43DC4 /* CCRatesTests.m */; };
+		48B528A318429EAF00F43DC4 /* CCRWebThings.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B528A218429EAF00F43DC4 /* CCRWebThings.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,8 @@
 		48B52893184154D300F43DC4 /* CCRatesTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CCRatesTests-Info.plist"; sourceTree = "<group>"; };
 		48B52895184154D300F43DC4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		48B52897184154D300F43DC4 /* CCRatesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CCRatesTests.m; sourceTree = "<group>"; };
+		48B528A118429EAF00F43DC4 /* CCRWebThings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCRWebThings.h; sourceTree = "<group>"; };
+		48B528A218429EAF00F43DC4 /* CCRWebThings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCRWebThings.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +120,8 @@
 				48B5287E184154D300F43DC4 /* Main.storyboard */,
 				48B52881184154D300F43DC4 /* CCRViewController.h */,
 				48B52882184154D300F43DC4 /* CCRViewController.m */,
+				48B528A118429EAF00F43DC4 /* CCRWebThings.h */,
+				48B528A218429EAF00F43DC4 /* CCRWebThings.m */,
 				48B52884184154D300F43DC4 /* Images.xcassets */,
 				48B52873184154D300F43DC4 /* Supporting Files */,
 			);
@@ -200,6 +205,13 @@
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Claus Guttesen";
 				TargetAttributes = {
+					48B52868184154D300F43DC4 = {
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
+					};
 					48B52889184154D300F43DC4 = {
 						TestTargetID = 48B52868184154D300F43DC4;
 					};
@@ -250,6 +262,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				48B528A318429EAF00F43DC4 /* CCRWebThings.m in Sources */,
 				48B52883184154D300F43DC4 /* CCRViewController.m in Sources */,
 				48B52879184154D300F43DC4 /* main.m in Sources */,
 				48B5287D184154D300F43DC4 /* CCRAppDelegate.m in Sources */,

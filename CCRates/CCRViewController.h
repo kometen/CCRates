@@ -10,4 +10,6 @@
 
 @interface CCRViewController : UIViewController
 
+-(void)getRatesWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
+
 @end
