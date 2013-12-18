@@ -11,16 +11,18 @@
 
 @interface CCRViewController ()
 
-//@property (nonatomic, weak) IBOutlet UIButton *ratesButton;
-
 @end
 
-@implementation CCRViewController
+@implementation CCRViewController {
+    NSMutableArray *ticktock;
+    NSMutableArray *tickerArray;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    tickerArray = [[NSMutableArray alloc] initWithArray:@[@"btc_usd", @"ltc_btc", @"ftc_btc"]];
+    [self getRates];
 }
 
 - (void)didReceiveMemoryWarning
@@ -30,28 +32,33 @@
 }
 
 -(IBAction)getRates {
-    CCRWebThings *ftcBtc = [[CCRWebThings alloc] initWithURL:@"https://btc-e.com/api/2/ftc_btc/ticker"];
-    NSLog(@"ftc-btc-ticker: %@", ftcBtc.url);
-    NSString *ftcBtcTicker = @"https://btc-e.com/api/2/ltc_btc/ticker";
-    NSURLSession *session = [NSURLSession sharedSession];
-    [[session dataTaskWithURL:[NSURL URLWithString:ftcBtcTicker]completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-//        NSLog(@"Got response %@ with error %@.\n", response, error);
-        NSLog(@"\nDATA:\n%@\nEND DATA\n", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-        NSError *jsonError;
-        NSMutableDictionary *jsonTicker = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
-        if (jsonError) {
-            NSLog(@"Error reading json-ticker: jsonError: %@", [jsonError localizedDescription]);
-        } else {
-            NSDictionary *ticker = jsonTicker[@"ticker"];
-                NSLog(@"last: %@", ticker[@"last"]);
-        }
-    }] resume];
+    for (NSString *ta in tickerArray) {
+        NSString *url = [NSString stringWithFormat:@"https://btc-e.com/api/2/%@/ticker", ta];
+        NSURLSession *session = [NSURLSession sharedSession];
+        [[session dataTaskWithURL:[NSURL URLWithString:url]completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            // NSLog(@"Got response %@ with error %@.\n", response, error);
+            if (error) {
+                NSLog(@"Unable to GET %@", url);
+            } else {
+                //NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+                NSError *jsonError;
+                NSMutableDictionary *jsonTicker = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
+                if (jsonError) {
+                    NSLog(@"Error reading json-ticker: jsonError: %@", [jsonError localizedDescription]);
+                } else {
+                    NSDictionary *ticker = jsonTicker[@"ticker"];
+                    NSLog(@"ticker: %@,\tlast: %@,\tlow: %@,\thigh: %@", ta, ticker[@"last"], ticker[@"low"], ticker[@"high"]);
+                }
+            }
+        }] resume];
+    }
 }
 
 -(void)getRatesWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     if (completionHandler) {
         NSLog(@"completionHandler");
+        [self getRates];
         completionHandler(UIBackgroundFetchResultNewData);
     }
 }
