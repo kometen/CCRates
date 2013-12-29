@@ -11,18 +11,32 @@
 
 @interface CCRViewController ()
 
+@property (nonatomic, strong) IBOutlet UILabel *btc_usd;
+@property (nonatomic, strong) IBOutlet UILabel *ltc_btc;
+@property (nonatomic, strong) IBOutlet UILabel *ftc_btc;
+@property (nonatomic, strong) IBOutlet UIProgressView *tickerProgressView;
+
 @end
 
 @implementation CCRViewController {
     NSMutableArray *ticktock;
     NSMutableArray *tickerArray;
+    __block float tickerCount;
+    __block int tickerIndex;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
     tickerArray = [[NSMutableArray alloc] initWithArray:@[@"btc_usd", @"ltc_btc", @"ftc_btc"]];
+    tickerCount = (float)[tickerArray count];
     [self getRates];
+}
+
+-(void)applicationWillEnterForeground:(UIApplication *)application
+{
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
 - (void)didReceiveMemoryWarning
@@ -32,6 +46,13 @@
 }
 
 -(IBAction)getRates {
+    tickerIndex = 0;
+    self.tickerProgressView.progress = 0.0f;
+    [self getRatesWithCompletionHandler:nil];
+}
+
+-(void)getRatesWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
     for (NSString *ta in tickerArray) {
         NSString *url = [NSString stringWithFormat:@"https://btc-e.com/api/2/%@/ticker", ta];
         NSURLSession *session = [NSURLSession sharedSession];
@@ -46,20 +67,40 @@
                 if (jsonError) {
                     NSLog(@"Error reading json-ticker: jsonError: %@", [jsonError localizedDescription]);
                 } else {
+                    tickerIndex++;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        self.tickerProgressView.progress = (tickerIndex / tickerCount);
+                    });
                     NSDictionary *ticker = jsonTicker[@"ticker"];
-                    NSLog(@"ticker: %@,\tlast: %@,\tlow: %@,\thigh: %@", ta, ticker[@"last"], ticker[@"low"], ticker[@"high"]);
+                    float tickerValue = [ticker[@"last"] floatValue];
+                    if ([ta isEqualToString:@"btc_usd"]) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            self.btc_usd.text = [NSString stringWithFormat:@"%.03f", tickerValue];
+                            [self.btc_usd setNeedsDisplay];
+                        });
+                    }
+                    if ([ta isEqualToString:@"ltc_btc"]) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            self.ltc_btc.text = [NSString stringWithFormat:@"%.05f", tickerValue];
+                            [self.btc_usd setNeedsDisplay];
+                        });
+                    }
+                    if ([ta isEqualToString:@"ftc_btc"]) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            self.ftc_btc.text = [NSString stringWithFormat:@"%.05f", tickerValue];
+                            [self.btc_usd setNeedsDisplay];
+                        });
+                    }
+//                    NSLog(@"ticker: %@,\tlast: %@,\tlow: %@,\thigh: %@", ta, ticker[@"last"], ticker[@"low"], ticker[@"high"]);
                 }
             }
         }] resume];
     }
-}
-
--(void)getRatesWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
-{
     if (completionHandler) {
         NSLog(@"completionHandler");
-        [self getRates];
+        //[self getRates];
         completionHandler(UIBackgroundFetchResultNewData);
+        [UIApplication sharedApplication].applicationIconBadgeNumber++;
     }
 }
 

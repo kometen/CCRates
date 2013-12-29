@@ -56,10 +56,7 @@
          The insertNewObjectForFetchWithCompletionHandler: method invokes the completion handler with the argument UIBackgroundFetchResultNewData.
          */
         [(CCRViewController *)topViewController getRatesWithCompletionHandler:completionHandler];
-        NSLog(@"applicationIconBadgeNumber");
-        [UIApplication sharedApplication].applicationIconBadgeNumber++;
     } else {
-        NSLog(@"Not the right class");
         completionHandler(UIBackgroundFetchResultFailed);
     }
 }
