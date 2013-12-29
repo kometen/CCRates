@@ -67,6 +67,7 @@
                 if (jsonError) {
                     NSLog(@"Error reading json-ticker: jsonError: %@", [jsonError localizedDescription]);
                 } else {
+                    // stackoverflow.com/questions/8803189/setprogress-is-no-longer-updating-uiprogressview-since-ios-5
                     tickerIndex++;
                     dispatch_async(dispatch_get_main_queue(), ^{
                         self.tickerProgressView.progress = (tickerIndex / tickerCount);
@@ -76,19 +77,16 @@
                     if ([ta isEqualToString:@"btc_usd"]) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             self.btc_usd.text = [NSString stringWithFormat:@"%.03f", tickerValue];
-                            [self.btc_usd setNeedsDisplay];
                         });
                     }
                     if ([ta isEqualToString:@"ltc_btc"]) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             self.ltc_btc.text = [NSString stringWithFormat:@"%.05f", tickerValue];
-                            [self.btc_usd setNeedsDisplay];
                         });
                     }
                     if ([ta isEqualToString:@"ftc_btc"]) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             self.ftc_btc.text = [NSString stringWithFormat:@"%.05f", tickerValue];
-                            [self.btc_usd setNeedsDisplay];
                         });
                     }
 //                    NSLog(@"ticker: %@,\tlast: %@,\tlow: %@,\thigh: %@", ta, ticker[@"last"], ticker[@"low"], ticker[@"high"]);
