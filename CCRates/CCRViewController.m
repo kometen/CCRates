@@ -15,7 +15,6 @@
 @property (nonatomic, strong) IBOutlet UILabel *ltc_btc;
 @property (nonatomic, strong) IBOutlet UILabel *ftc_btc;
 @property (nonatomic, strong) IBOutlet UIProgressView *tickerProgressView;
-@property (nonatomic, strong) IBOutlet UIActivityIndicatorView *tickerActivityIndicatorView;
 
 @end
 
