@@ -46,14 +46,14 @@
 }
 
 -(IBAction)getRates {
-    tickerIndex = 0;
-    self.tickerProgressView.progress = 0.0f;
     [self getRatesWithCompletionHandler:nil];
 }
 
 -(void)getRatesWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     for (NSString *ta in tickerArray) {
+        tickerIndex = 0;
+        self.tickerProgressView.progress = 0.0f;
         NSString *url = [NSString stringWithFormat:@"https://btc-e.com/api/2/%@/ticker", ta];
         NSURLSession *session = [NSURLSession sharedSession];
         [[session dataTaskWithURL:[NSURL URLWithString:url]completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -71,6 +71,12 @@
                     tickerIndex++;
                     dispatch_async(dispatch_get_main_queue(), ^{
                         self.tickerProgressView.progress = (tickerIndex / tickerCount);
+                        if (tickerIndex == tickerCount) {
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [NSThread sleepForTimeInterval:0.5f];
+                                self.tickerProgressView.progress = 0.0f;
+                            });
+                        }
                     });
                     NSDictionary *ticker = jsonTicker[@"ticker"];
                     float tickerValue = [ticker[@"last"] floatValue];
@@ -89,15 +95,14 @@
                             self.ftc_btc.text = [NSString stringWithFormat:@"%.05f", tickerValue];
                         });
                     }
-//                    NSLog(@"ticker: %@,\tlast: %@,\tlow: %@,\thigh: %@", ta, ticker[@"last"], ticker[@"low"], ticker[@"high"]);
                 }
             }
         }] resume];
     }
     if (completionHandler) {
         NSLog(@"completionHandler");
-        //[self getRates];
         completionHandler(UIBackgroundFetchResultNewData);
+//        [self getRatesWithCompletionHandler:nil];
         [UIApplication sharedApplication].applicationIconBadgeNumber++;
     }
 }
