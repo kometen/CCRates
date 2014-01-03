@@ -15,6 +15,7 @@
 @property (nonatomic, strong) IBOutlet UILabel *ltc_btc;
 @property (nonatomic, strong) IBOutlet UILabel *ftc_btc;
 @property (nonatomic, strong) IBOutlet UIProgressView *tickerProgressView;
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView *tickerActivityIndicatorView;
 
 @end
 
@@ -70,9 +71,11 @@
                     // stackoverflow.com/questions/8803189/setprogress-is-no-longer-updating-uiprogressview-since-ios-5
                     tickerIndex++;
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
                         self.tickerProgressView.progress = (tickerIndex / tickerCount);
                         if (tickerIndex == tickerCount) {
                             dispatch_async(dispatch_get_main_queue(), ^{
+                                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
                                 [NSThread sleepForTimeInterval:0.5f];
                                 self.tickerProgressView.progress = 0.0f;
                             });
