@@ -14,6 +14,7 @@
 @property (nonatomic, strong) IBOutlet UILabel *btc_usd;
 @property (nonatomic, strong) IBOutlet UILabel *ltc_btc;
 @property (nonatomic, strong) IBOutlet UILabel *ftc_btc;
+@property (nonatomic, strong) IBOutlet UILabel *btc_usd_mt_gox;
 @property (nonatomic, strong) IBOutlet UIProgressView *tickerProgressView;
 
 @end
@@ -51,7 +52,29 @@
 
 -(void)getRatesWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
+    NSString *btcUsdString = @"http://data.mtgox.com/api/2/BTCUSD/money/ticker_fast";
+    NSURLSession *mtgoxSession = [NSURLSession sharedSession];
+    [[mtgoxSession dataTaskWithURL:[NSURL URLWithString:btcUsdString]completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (error) {
+            NSLog(@"Unable to get BTC to USD ticker");
+        } else {
+            NSError *jsonError;
+            NSMutableDictionary *jsonTicker = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
+            if (jsonError) {
+                NSLog(@"Error reading BTC to USD json-ticker, jsonError: %@", jsonError);
+            } else {
+                NSDictionary *ticker = jsonTicker[@"data"];
+                NSDictionary *tickerData = ticker[@"last"];
+                float tickerValue = [tickerData[@"value"] floatValue];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.btc_usd_mt_gox.text = [NSString stringWithFormat:@"%.03f", tickerValue];
+                });
+            }
+        }
+    }] resume];
+
     for (NSString *ta in tickerArray) {
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
         tickerIndex = 0;
         self.tickerProgressView.progress = 0.0f;
         NSString *url = [NSString stringWithFormat:@"https://btc-e.com/api/2/%@/ticker", ta];
@@ -70,7 +93,6 @@
                     // stackoverflow.com/questions/8803189/setprogress-is-no-longer-updating-uiprogressview-since-ios-5
                     tickerIndex++;
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
                         self.tickerProgressView.progress = (tickerIndex / tickerCount);
                         if (tickerIndex == tickerCount) {
                             dispatch_async(dispatch_get_main_queue(), ^{
