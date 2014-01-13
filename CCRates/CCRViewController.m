@@ -38,7 +38,7 @@
 {
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
-    tickerArray = [[NSMutableArray alloc] initWithArray:@[@"btc_usd", @"ltc_btc"]];
+    tickerArray = [[NSMutableArray alloc] initWithArray:@[@"ltc_btc"]];
     tickerCount = (float)[tickerArray count];
     usd2nok = 6.2;
     [self getRates];
@@ -61,6 +61,97 @@
 
 -(void)getRatesWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    });
+
+    tickerIndex++;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.tickerProgressView.progress = (tickerIndex / tickerCount);
+    });
+    [self getMtGoxRates];
+
+    tickerIndex++;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.tickerProgressView.progress = (tickerIndex / tickerCount);
+    });
+
+    [self giveMeCoins];
+    tickerIndex++;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.tickerProgressView.progress = (tickerIndex / tickerCount);
+    });
+
+    [self getBtcExchRates];
+    // stackoverflow.com/questions/8803189/setprogress-is-no-longer-updating-uiprogressview-since-ios-5
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.tickerProgressView.progress = (tickerIndex / tickerCount);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            [NSThread sleepForTimeInterval:0.5f];
+            self.tickerProgressView.progress = 0.0f;
+        });
+    });
+    
+    if (completionHandler) {
+        NSLog(@"completionHandler");
+        completionHandler(UIBackgroundFetchResultNewData);
+//        [self getRatesWithCompletionHandler:nil];
+        [UIApplication sharedApplication].applicationIconBadgeNumber++;
+    }
+}
+
+-(void)getBtcExchRates {
+    // 1
+    NSString *btc_exch_btc_usd = [NSString stringWithFormat:@"https://btc-e.com/api/2/btc_usd/ticker"];
+    NSURLSession *session1 = [NSURLSession sharedSession];
+    [[session1 dataTaskWithURL:[NSURL URLWithString:btc_exch_btc_usd]completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        // NSLog(@"Got response %@ with error %@.\n", response, error);
+        if (error) {
+            NSLog(@"Unable to GET %@", btc_exch_btc_usd);
+        } else {
+            //NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+            NSError *jsonError;
+            NSMutableDictionary *jsonTicker = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
+            if (jsonError) {
+                NSLog(@"Error reading json-ticker: jsonError: %@", [jsonError localizedDescription]);
+            } else {
+                NSDictionary *ticker = jsonTicker[@"ticker"];
+                float tickerValue = [ticker[@"last"] floatValue];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.btc_usd_label.text = [NSString stringWithFormat:@"%.03f", tickerValue];
+                });
+            }
+        }
+    }] resume];
+
+    // 2
+    NSString *btc_exch_ltc_btc = [NSString stringWithFormat:@"https://btc-e.com/api/2/ltc_btc/ticker"];
+    NSURLSession *session2 = [NSURLSession sharedSession];
+    [[session2 dataTaskWithURL:[NSURL URLWithString:btc_exch_ltc_btc]completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        //NSLog(@"Got response %@ with error %@.\n", response, error);
+        if (error) {
+            NSLog(@"Unable to GET %@", btc_exch_btc_usd);
+        } else {
+            //NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+            NSError *jsonError;
+            NSMutableDictionary *jsonTicker = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
+            if (jsonError) {
+                NSLog(@"Error reading json-ticker: jsonError: %@", [jsonError localizedDescription]);
+            } else {
+                NSDictionary *ticker = jsonTicker[@"ticker"];
+                float tickerValue = [ticker[@"last"] floatValue];
+                ltc2btc = tickerValue;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.ltc_btc_label.text = [NSString stringWithFormat:@"%.05f", tickerValue];
+                    self.one_ltc_label.text = [NSString stringWithFormat:@"%.05f", (tickerValue * btc2usd)];
+                });
+            }
+        }
+    }] resume];
+}
+
+-(void)getMtGoxRates {
     NSString *btcUsdString = @"http://data.mtgox.com/api/2/BTCUSD/money/ticker_fast";
     NSURLSession *mtgoxSession = [NSURLSession sharedSession];
     [[mtgoxSession dataTaskWithURL:[NSURL URLWithString:btcUsdString] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -82,7 +173,9 @@
             }
         }
     }] resume];
-    
+}
+
+-(void)giveMeCoins {
     NSString *litecoinsMinedString = @"https://give-me-coins.com/pool/api-ltc?api_key=6de2398812392441d22e45f60f9287f79ab4b4cd967c38edfc6c39bdc77438e8";
     NSURLSession *gmcSession = [NSURLSession sharedSession];
     [[gmcSession dataTaskWithURL:[NSURL URLWithString:litecoinsMinedString] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -104,64 +197,6 @@
             }
         }
     }] resume];
-
-    for (NSString *ta in tickerArray) {
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-        tickerIndex = 0;
-        self.tickerProgressView.progress = 0.0f;
-        NSString *url = [NSString stringWithFormat:@"https://btc-e.com/api/2/%@/ticker", ta];
-        NSURLSession *session = [NSURLSession sharedSession];
-        [[session dataTaskWithURL:[NSURL URLWithString:url]completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            // NSLog(@"Got response %@ with error %@.\n", response, error);
-            if (error) {
-                NSLog(@"Unable to GET %@", url);
-            } else {
-                //NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-                NSError *jsonError;
-                NSMutableDictionary *jsonTicker = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
-                if (jsonError) {
-                    NSLog(@"Error reading json-ticker: jsonError: %@", [jsonError localizedDescription]);
-                } else {
-                    // stackoverflow.com/questions/8803189/setprogress-is-no-longer-updating-uiprogressview-since-ios-5
-                    tickerIndex++;
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        self.tickerProgressView.progress = (tickerIndex / tickerCount);
-                        if (tickerIndex == tickerCount) {
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-                                [NSThread sleepForTimeInterval:0.5f];
-                                self.tickerProgressView.progress = 0.0f;
-                            });
-                        }
-                    });
-                    NSDictionary *ticker = jsonTicker[@"ticker"];
-                    float tickerValue = [ticker[@"last"] floatValue];
-                    if ([ta isEqualToString:@"btc_usd"]) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            self.btc_usd_label.text = [NSString stringWithFormat:@"%.03f", tickerValue];
-                        });
-                    }
-                    if ([ta isEqualToString:@"ltc_btc"]) {
-                        ltc2btc = tickerValue;
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            self.ltc_btc_label.text = [NSString stringWithFormat:@"%.05f", tickerValue];
-                            self.one_ltc_label.text = [NSString stringWithFormat:@"%.05f", (tickerValue * btc2usd)];
-                        });
-                    }
-                }
-            }
-        }] resume];
-    }
-    if (completionHandler) {
-        NSLog(@"completionHandler");
-        completionHandler(UIBackgroundFetchResultNewData);
-//        [self getRatesWithCompletionHandler:nil];
-        [UIApplication sharedApplication].applicationIconBadgeNumber++;
-    }
-}
-
--(void)getMtGoxRates {
-    
 }
 
 @end
