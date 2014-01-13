@@ -63,32 +63,12 @@
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-    });
-
-    tickerIndex++;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.tickerProgressView.progress = (tickerIndex / tickerCount);
-    });
-    [self getMtGoxRates];
-
-    tickerIndex++;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.tickerProgressView.progress = (tickerIndex / tickerCount);
-    });
-
-    [self giveMeCoins];
-    tickerIndex++;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.tickerProgressView.progress = (tickerIndex / tickerCount);
-    });
-
-    [self getBtcExchRates];
-    // stackoverflow.com/questions/8803189/setprogress-is-no-longer-updating-uiprogressview-since-ios-5
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.tickerProgressView.progress = (tickerIndex / tickerCount);
+        [self getMtGoxRates];
+        [self giveMeCoins];
+        [self getBtcExchRates];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
             [NSThread sleepForTimeInterval:0.5f];
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
             self.tickerProgressView.progress = 0.0f;
         });
     });
@@ -103,6 +83,10 @@
 
 -(void)getBtcExchRates {
     // 1
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.tickerProgressView.progress = (++tickerIndex / tickerCount);
+    });
+
     NSString *btc_exch_btc_usd = [NSString stringWithFormat:@"https://btc-e.com/api/2/btc_usd/ticker"];
     NSURLSession *session1 = [NSURLSession sharedSession];
     [[session1 dataTaskWithURL:[NSURL URLWithString:btc_exch_btc_usd]completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -152,6 +136,9 @@
 }
 
 -(void)getMtGoxRates {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.tickerProgressView.progress = (++tickerIndex / tickerCount);
+    });
     NSString *btcUsdString = @"http://data.mtgox.com/api/2/BTCUSD/money/ticker_fast";
     NSURLSession *mtgoxSession = [NSURLSession sharedSession];
     [[mtgoxSession dataTaskWithURL:[NSURL URLWithString:btcUsdString] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -176,6 +163,9 @@
 }
 
 -(void)giveMeCoins {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.tickerProgressView.progress = (++tickerIndex / tickerCount);
+    });
     NSString *litecoinsMinedString = @"https://give-me-coins.com/pool/api-ltc?api_key=6de2398812392441d22e45f60f9287f79ab4b4cd967c38edfc6c39bdc77438e8";
     NSURLSession *gmcSession = [NSURLSession sharedSession];
     [[gmcSession dataTaskWithURL:[NSURL URLWithString:litecoinsMinedString] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
