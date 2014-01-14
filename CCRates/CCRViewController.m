@@ -63,16 +63,12 @@
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-        [self getMtGoxRates];
-        [self giveMeCoins];
-        [self getBtcExchRates];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [NSThread sleepForTimeInterval:0.5f];
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-            self.tickerProgressView.progress = 0.0f;
-        });
     });
-    
+
+    [self getMtGoxRates];
+    [self giveMeCoins];
+    [self getBtcExchRates];
+
     if (completionHandler) {
         NSLog(@"completionHandler");
         completionHandler(UIBackgroundFetchResultNewData);
@@ -129,7 +125,12 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     self.ltc_btc_label.text = [NSString stringWithFormat:@"%.05f", tickerValue];
                     self.one_ltc_label.text = [NSString stringWithFormat:@"%.05f", (tickerValue * btc2usd)];
-                });
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [NSThread sleepForTimeInterval:0.5f];
+                        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+                        self.tickerProgressView.progress = 0.0f;
+                    });
+               });
             }
         }
     }] resume];
