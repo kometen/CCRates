@@ -38,8 +38,7 @@
 {
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
-    tickerArray = [[NSMutableArray alloc] initWithArray:@[@"ltc_btc"]];
-    tickerCount = (float)[tickerArray count];
+    tickerCount = 3.0f;
     usd2nok = 6.08;
     [self getRates];
 }
@@ -61,6 +60,7 @@
 
 -(void)getRatesWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
+    tickerIndex = 0;
     dispatch_async(dispatch_get_main_queue(), ^{
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     });
@@ -78,9 +78,8 @@
 }
 
 -(void)getBtcExchRates {
-    // 1
-    [self tickerProgress];
 
+    // 1
     NSString *btc_exch_btc_usd = [NSString stringWithFormat:@"https://btc-e.com/api/2/btc_usd/ticker"];
     NSURLSession *session1 = [NSURLSession sharedSession];
     [[session1 dataTaskWithURL:[NSURL URLWithString:btc_exch_btc_usd]completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -97,6 +96,7 @@
                 NSDictionary *ticker = jsonTicker[@"ticker"];
                 float tickerValue = [ticker[@"last"] floatValue];
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    [self tickerProgress];
                     self.btc_usd_label.text = [NSString stringWithFormat:@"%.03f", tickerValue];
                 });
             }
@@ -134,11 +134,6 @@
                         self.one_ltc_label.textColor = [UIColor blackColor];
                     }
                     self.one_ltc_label.text = [NSString stringWithFormat:@"%.05f", (tickerValue * btc2usd)];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [NSThread sleepForTimeInterval:0.5f];
-                        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-                        self.tickerProgressView.progress = 0.0f;
-                    });
                });
             }
         }
@@ -146,7 +141,6 @@
 }
 
 -(void)getMtGoxRates {
-    [self tickerProgress];
     NSString *btcUsdString = @"http://data.mtgox.com/api/2/BTCUSD/money/ticker_fast";
     NSURLSession *mtgoxSession = [NSURLSession sharedSession];
     [[mtgoxSession dataTaskWithURL:[NSURL URLWithString:btcUsdString] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -163,6 +157,7 @@
                 float tickerValue = [tickerData[@"value"] floatValue];
                 btc2usd = tickerValue;
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    [self tickerProgress];
                     // Hardcoded colorscheme, bad, bad. If usefull place in some preference
                     if (tickerValue > 1000) {
                         self.btc_usd_mt_gox_label.textColor = [UIColor blueColor];
@@ -195,6 +190,11 @@
                     self.ltc2btcLabel.text = [NSString stringWithFormat:@"%.05f", confirmed_rewards * ltc2btc];
                     self.ltc2usdLabel.text = [NSString stringWithFormat:@"%.05f", confirmed_rewards * ltc2btc * btc2usd];
                     self.ltc2nokLabel.text = [NSString stringWithFormat:@"%.05f", confirmed_rewards *  ltc2btc * btc2usd * usd2nok];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [NSThread sleepForTimeInterval:0.5f];
+                        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+                        self.tickerProgressView.progress = 0.0f;
+                    });
                 });
             }
         }
