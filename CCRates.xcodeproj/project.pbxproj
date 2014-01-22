@@ -474,6 +474,7 @@
 				48B5289D184154D300F43DC4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		48B5289E184154D300F43DC4 /* Build configuration list for PBXNativeTarget "CCRatesTests" */ = {
 			isa = XCConfigurationList;
@@ -482,6 +483,7 @@
 				48B528A0184154D300F43DC4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

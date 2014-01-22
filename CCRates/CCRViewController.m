@@ -30,7 +30,9 @@
     __block int tickerIndex;
     __block float btc2usd;
     __block float ltc2btc;
-    __block float confirmed_rewards;
+    __block float ltc_confirmed_rewards;
+    __block float gmc_confirmed_rewards;
+    __block float px_confirmed_rewards;
     __block float usd2nok;
 }
 
@@ -66,7 +68,7 @@
     });
 
     [self getMtGoxRates];
-    [self giveMeCoins];
+    [self litecoinPools];
     [self getBtcExchRates];
 
     if (completionHandler) {
@@ -171,11 +173,11 @@
     }] resume];
 }
 
--(void)giveMeCoins {
+-(void)litecoinPools {
     [self tickerProgress];
-    NSString *litecoinsMinedString = @"https://give-me-coins.com/pool/api-ltc?api_key=6de2398812392441d22e45f60f9287f79ab4b4cd967c38edfc6c39bdc77438e8";
+    NSString *giveMeCoinsURL = @"https://give-me-coins.com/pool/api-ltc?api_key=6de2398812392441d22e45f60f9287f79ab4b4cd967c38edfc6c39bdc77438e8";
     NSURLSession *gmcSession = [NSURLSession sharedSession];
-    [[gmcSession dataTaskWithURL:[NSURL URLWithString:litecoinsMinedString] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [[gmcSession dataTaskWithURL:[NSURL URLWithString:giveMeCoinsURL] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {
             NSLog(@"Unable to get user information");
         } else {
@@ -184,17 +186,33 @@
             if (gmcError) {
                 NSLog(@"Error reading user information, gmcError: %@", gmcError);
             } else {
-                confirmed_rewards = [gmcUserInformation[@"confirmed_rewards"] floatValue];
+                gmc_confirmed_rewards = [gmcUserInformation[@"confirmed_rewards"] floatValue];
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    self.litecoinsMinedLabel.text = [NSString stringWithFormat:@"%.05f", confirmed_rewards];
-                    self.ltc2btcLabel.text = [NSString stringWithFormat:@"%.05f", confirmed_rewards * ltc2btc];
-                    self.ltc2usdLabel.text = [NSString stringWithFormat:@"%.05f", confirmed_rewards * ltc2btc * btc2usd];
-                    self.ltc2nokLabel.text = [NSString stringWithFormat:@"%.05f", confirmed_rewards *  ltc2btc * btc2usd * usd2nok];
+                    [self updateLitecoinInformation];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [NSThread sleepForTimeInterval:0.5f];
                         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
                         self.tickerProgressView.progress = 0.0f;
                     });
+                });
+            }
+        }
+    }] resume];
+    
+    NSString *poolXeuURL = @"http://pool-x.eu/api?api_key=b149d449361f37042d43729b78219425268531127913678dd03d5e887421274e";
+    NSURLSession *pxSession = [NSURLSession sharedSession];
+    [[pxSession dataTaskWithURL:[NSURL URLWithString:poolXeuURL] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (error) {
+            NSLog(@"Unable to get user information");
+        } else {
+            NSError *pxError;
+            NSMutableDictionary *pxUserInformation = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&pxError];
+            if (pxError) {
+                NSLog(@"Error reading user information, pxError: %@", pxError);
+            } else {
+                px_confirmed_rewards = [pxUserInformation[@"confirmed_rewards"] floatValue];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self updateLitecoinInformation];
                 });
             }
         }
@@ -205,6 +223,14 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         self.tickerProgressView.progress = (++tickerIndex / tickerCount);
     });
+}
+
+-(void)updateLitecoinInformation {
+    ltc_confirmed_rewards = gmc_confirmed_rewards + px_confirmed_rewards;
+    self.litecoinsMinedLabel.text = [NSString stringWithFormat:@"%.05f", ltc_confirmed_rewards];
+    self.ltc2btcLabel.text = [NSString stringWithFormat:@"%.05f", ltc_confirmed_rewards * ltc2btc];
+    self.ltc2usdLabel.text = [NSString stringWithFormat:@"%.05f", ltc_confirmed_rewards * ltc2btc * btc2usd];
+    self.ltc2nokLabel.text = [NSString stringWithFormat:@"%.05f", ltc_confirmed_rewards *  ltc2btc * btc2usd * usd2nok];
 }
 
 @end
