@@ -1,28 +1,51 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="13B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="rIZ-Mh-gju">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="13B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="akc-Aw-RBn">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
     <scenes>
-        <!--Navigation Controller-->
-        <scene sceneID="XOs-3t-1yA">
+        <!--Tab Bar Controller-->
+        <scene sceneID="L82-G6-nqq">
             <objects>
-                <navigationController definesPresentationContext="YES" id="rIZ-Mh-gju" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="bab-Eb-u55">
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
+                <tabBarController definesPresentationContext="YES" id="akc-Aw-RBn" sceneMemberID="viewController">
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="ojN-h8-klU">
+                        <rect key="frame" x="129" y="330" width="163" height="49"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </tabBar>
                     <connections>
-                        <segue destination="vXZ-lx-hvc" kind="relationship" relationship="rootViewController" id="Gad-QG-dMp"/>
+                        <segue destination="vXZ-lx-hvc" kind="relationship" relationship="viewControllers" id="DnR-QF-Jpz"/>
+                        <segue destination="drB-OI-DZi" kind="relationship" relationship="viewControllers" id="wKo-G5-kX9"/>
                     </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="tez-mE-jTA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fRJ-ux-HBd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-472" y="-62"/>
+            <point key="canvasLocation" x="-1479" y="265"/>
         </scene>
-        <!--View Controller-->
+        <!--View Controller - Feathercoin-->
+        <scene sceneID="ay6-wt-2TU">
+            <objects>
+                <viewController id="drB-OI-DZi" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="vnl-2W-dMI"/>
+                        <viewControllerLayoutGuide type="bottom" id="0js-9C-jqQ"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="6DG-xA-8oY">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Feathercoin" id="tjM-oy-yit"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sA1-PF-Gk4" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-945" y="591"/>
+        </scene>
+        <!--Litecoin View Controller - Litecoin-->
         <scene sceneID="ufC-wZ-h7g">
             <objects>
-                <viewController id="vXZ-lx-hvc" customClass="CCRViewController" sceneMemberID="viewController">
+                <viewController id="vXZ-lx-hvc" customClass="LitecoinViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="tFl-wX-5H6"/>
                         <viewControllerLayoutGuide type="bottom" id="xzq-kr-81P"/>
@@ -31,8 +54,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AZZ-8I-ae0">
-                                <rect key="frame" x="140" y="518" width="40" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AZZ-8I-ae0">
+                                <rect key="frame" x="140" y="373" width="40" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Rates">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -161,11 +184,8 @@
                             </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstAttribute="bottom" secondItem="AZZ-8I-ae0" secondAttribute="bottom" constant="20" symbolic="YES" id="UNe-ik-vSQ"/>
-                            <constraint firstItem="AZZ-8I-ae0" firstAttribute="centerX" secondItem="kh9-bI-dsS" secondAttribute="centerX" id="atq-jT-1q8"/>
-                        </constraints>
                     </view>
+                    <tabBarItem key="tabBarItem" title="Litecoin" id="HAK-XZ-tq4"/>
                     <navigationItem key="navigationItem" id="GnT-zT-lzM">
                         <nil key="title"/>
                         <progressView key="titleView" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progressViewStyle="bar" progress="0.5" id="Bcs-h6-CiD">
@@ -186,7 +206,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="32" y="-62"/>
+            <point key="canvasLocation" x="-945" y="-89"/>
         </scene>
     </scenes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

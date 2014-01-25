@@ -7,7 +7,7 @@
 //
 
 #import "CCRAppDelegate.h"
-#import "CCRViewController.h"
+#import "LitecoinViewController.h"
 
 @implementation CCRAppDelegate
 
@@ -49,13 +49,13 @@
     
     UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
     id topViewController = navigationController.topViewController;
-    if ([topViewController isKindOfClass:[CCRViewController class]]) {
+    if ([topViewController isKindOfClass:[LitecoinViewController class]]) {
         /*
          The master view controller's insertNewObjectForFetchWithCompletionHandler: method simply adds some new data to the tableview in this app. Replace this with what's appropriate for your app.
          
          The insertNewObjectForFetchWithCompletionHandler: method invokes the completion handler with the argument UIBackgroundFetchResultNewData.
          */
-        [(CCRViewController *)topViewController getRatesWithCompletionHandler:completionHandler];
+        [(LitecoinViewController *)topViewController getRatesWithCompletionHandler:completionHandler];
     } else {
         completionHandler(UIBackgroundFetchResultFailed);
     }

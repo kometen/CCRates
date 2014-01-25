@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CCRViewController : UIViewController
+@interface LitecoinViewController : UIViewController
 
 -(void)getRatesWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
 

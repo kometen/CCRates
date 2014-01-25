@@ -6,10 +6,10 @@
 //  Copyright (c) 2013 Claus Guttesen. All rights reserved.
 //
 
-#import "CCRViewController.h"
+#import "LitecoinViewController.h"
 #import "CCRWebThings.h"
 
-@interface CCRViewController ()
+@interface LitecoinViewController ()
 
 @property (nonatomic, strong) IBOutlet UILabel *btc_usd_label;
 @property (nonatomic, strong) IBOutlet UILabel *ltc_btc_label;
@@ -23,7 +23,7 @@
 
 @end
 
-@implementation CCRViewController {
+@implementation LitecoinViewController {
     NSMutableArray *ticktock;
     NSMutableArray *tickerArray;
     __block float tickerCount;
