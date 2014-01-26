@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		48235A5218947D0600D8EFAC /* FeathercoinViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 48235A5118947D0600D8EFAC /* FeathercoinViewController.m */; };
 		48B5286D184154D300F43DC4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48B5286C184154D300F43DC4 /* Foundation.framework */; };
 		48B5286F184154D300F43DC4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48B5286E184154D300F43DC4 /* CoreGraphics.framework */; };
 		48B52871184154D300F43DC4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 48B52870184154D300F43DC4 /* UIKit.framework */; };
@@ -35,6 +36,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		48235A5018947D0600D8EFAC /* FeathercoinViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeathercoinViewController.h; sourceTree = "<group>"; };
+		48235A5118947D0600D8EFAC /* FeathercoinViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FeathercoinViewController.m; sourceTree = "<group>"; };
 		48B52869184154D300F43DC4 /* CCRates.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CCRates.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		48B5286C184154D300F43DC4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		48B5286E184154D300F43DC4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -118,6 +121,8 @@
 				48B5287B184154D300F43DC4 /* CCRAppDelegate.h */,
 				48B5287C184154D300F43DC4 /* CCRAppDelegate.m */,
 				48B5287E184154D300F43DC4 /* Main.storyboard */,
+				48235A5018947D0600D8EFAC /* FeathercoinViewController.h */,
+				48235A5118947D0600D8EFAC /* FeathercoinViewController.m */,
 				48B52881184154D300F43DC4 /* LitecoinViewController.h */,
 				48B52882184154D300F43DC4 /* LitecoinViewController.m */,
 				48B528A118429EAF00F43DC4 /* CCRWebThings.h */,
@@ -264,6 +269,7 @@
 			files = (
 				48B528A318429EAF00F43DC4 /* CCRWebThings.m in Sources */,
 				48B52883184154D300F43DC4 /* LitecoinViewController.m in Sources */,
+				48235A5218947D0600D8EFAC /* FeathercoinViewController.m in Sources */,
 				48B52879184154D300F43DC4 /* main.m in Sources */,
 				48B5287D184154D300F43DC4 /* CCRAppDelegate.m in Sources */,
 			);
