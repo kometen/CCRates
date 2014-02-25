@@ -13,7 +13,6 @@
 
 @property (nonatomic, strong) IBOutlet UILabel *btc_usd_label;
 @property (nonatomic, strong) IBOutlet UILabel *ltc_btc_label;
-@property (nonatomic, strong) IBOutlet UILabel *btc_usd_mt_gox_label;
 @property (nonatomic, strong) IBOutlet UILabel *one_ltc_label;
 @property (nonatomic, strong) IBOutlet UILabel *litecoinsMinedLabel;
 @property (nonatomic, strong) IBOutlet UILabel *ltc2btcLabel;
@@ -66,7 +65,6 @@
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     });
 
-    [self getMtGoxRates];
     [self litecoinPools];
     [self getBtcExchRates];
 
@@ -96,6 +94,7 @@
             } else {
                 NSDictionary *ticker = jsonTicker[@"ticker"];
                 float tickerValue = [ticker[@"last"] floatValue];
+                btc2usd = tickerValue;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self tickerProgress];
                     self.btc_usd_label.text = [NSString stringWithFormat:@"%.03f", tickerValue];
@@ -136,37 +135,6 @@
                     }
                     self.one_ltc_label.text = [NSString stringWithFormat:@"%.05f", (tickerValue * btc2usd)];
                });
-            }
-        }
-    }] resume];
-}
-
--(void)getMtGoxRates {
-    NSString *btcUsdString = @"http://data.mtgox.com/api/2/BTCUSD/money/ticker_fast";
-    NSURLSession *mtgoxSession = [NSURLSession sharedSession];
-    [[mtgoxSession dataTaskWithURL:[NSURL URLWithString:btcUsdString] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        if (error) {
-            NSLog(@"Unable to get BTC to USD ticker");
-        } else {
-            NSError *jsonError;
-            NSMutableDictionary *jsonTicker = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&jsonError];
-            if (jsonError) {
-                NSLog(@"Error reading BTC to USD json-ticker, jsonError: %@", jsonError);
-            } else {
-                NSDictionary *ticker = jsonTicker[@"data"];
-                NSDictionary *tickerData = ticker[@"last_local"];
-                float tickerValue = [tickerData[@"value"] floatValue];
-                btc2usd = tickerValue;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self tickerProgress];
-                    // Hardcoded colorscheme, bad, bad. If usefull place in some preference
-                    if (tickerValue > 1000) {
-                        self.btc_usd_mt_gox_label.textColor = [UIColor blueColor];
-                    } else {
-                        self.btc_usd_mt_gox_label.textColor = [UIColor blackColor];
-                    }
-                    self.btc_usd_mt_gox_label.text = [NSString stringWithFormat:@"%.03f", tickerValue];
-                });
             }
         }
     }] resume];
