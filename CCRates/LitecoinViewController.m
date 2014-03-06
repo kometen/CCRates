@@ -38,7 +38,7 @@
 {
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
-    tickerCount = 3.0f;
+    tickerCount = 2.0f;
     usd2nok = 6.08;
     [self getRates];
 }
